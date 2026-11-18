@@ -190,8 +190,8 @@ export class WechatOfficialMessageEncoder<C extends Context = Context> extends M
         resData = JSON.parse(resData)
       } catch {}
     }
-    if (resData?.errcode === 40001) {
-      this.bot.logger.warn('access_token expired, refreshing token and retrying upload...')
+    if ([40001, 40014, 42001].includes(resData?.errcode)) {
+      this.bot.logger.warn(`access_token 失效或过期 (${resData.errcode})，正在重新获取凭证并重试上传...`)
       await this.bot.refreshToken()
       const retryResp = await this.bot.http.post<{
         type: string
